@@ -79,12 +79,20 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                     .filter(t -> t.getTask() == taskType && t.getStatus() != TaskStatus.COMPLETED)
                     .collect(Collectors.toList());
 
-            if (!tasksOfType.isEmpty()) {
-                for (TaskManagement taskToUpdate : tasksOfType) {
-                    taskToUpdate.setAssigneeId(request.getAssigneeId());
+            boolean reassigned = false;
+            for (TaskManagement taskToUpdate : tasksOfType) {
+                if (!taskToUpdate.getAssigneeId().equals(request.getAssigneeId()) && taskToUpdate.getStatus() == TaskStatus.ASSIGNED) {
+                    // Mark the old task as CANCELLED
+                    taskToUpdate.setStatus(TaskStatus.CANCELLED);
                     taskRepository.save(taskToUpdate);
+                    reassigned = true;
+                } else if (taskToUpdate.getAssigneeId().equals(request.getAssigneeId()) && taskToUpdate.getStatus() == TaskStatus.ASSIGNED) {
+                    // Task already assigned to the new assignee, nothing to do
+                    reassigned = true;
                 }
-            } else {
+            }
+            if (!reassigned) {
+                // Create a new task for the new assignee
                 TaskManagement newTask = new TaskManagement();
                 newTask.setReferenceId(request.getReferenceId());
                 newTask.setReferenceType(request.getReferenceType());
