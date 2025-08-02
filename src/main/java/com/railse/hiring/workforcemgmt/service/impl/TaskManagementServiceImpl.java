@@ -109,9 +109,9 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     public List<TaskManagementDto> fetchTasksByDate(TaskFetchByDateRequest request) {
         List<TaskManagement> tasks = taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
 
-        // NOTE: Bug 2 fix and smart logic should be added here later
+        // Exclude CANCELLED tasks
         List<TaskManagement> filteredTasks = tasks.stream()
-                .filter(task -> true) // placeholder
+                .filter(task -> task.getStatus() != TaskStatus.CANCELLED)
                 .collect(Collectors.toList());
 
         return taskMapper.modelListToDtoList(filteredTasks);
