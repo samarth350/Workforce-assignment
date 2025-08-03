@@ -5,6 +5,7 @@ import com.railse.hiring.workforcemgmt.dto.*;
 import com.railse.hiring.workforcemgmt.mapper.ITaskManagementMapper;
 import com.railse.hiring.workforcemgmt.model.TaskManagement;
 import com.railse.hiring.workforcemgmt.model.enums.Task;
+import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import com.railse.hiring.workforcemgmt.model.enums.TaskStatus;
 import com.railse.hiring.workforcemgmt.repository.TaskRepository;
 import com.railse.hiring.workforcemgmt.service.TaskManagementService;
@@ -41,7 +42,11 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             newTask.setReferenceType(item.getReferenceType());
             newTask.setTask(item.getTask());
             newTask.setAssigneeId(item.getAssigneeId());
-            newTask.setPriority(item.getPriority());
+            if (item.getPriority() != null) {
+                newTask.setPriority(item.getPriority());
+            } else {
+                newTask.setPriority(Priority.MEDIUM);
+            }
             newTask.setTaskDeadlineTime(item.getTaskDeadlineTime());
             newTask.setStatus(TaskStatus.ASSIGNED);
             newTask.setDescription("New task created.");
@@ -120,5 +125,21 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             )
             .collect(Collectors.toList());
         return taskMapper.modelListToDtoList(filteredTasks);
+    }
+
+    @Override
+    public TaskManagementDto updateTaskPriority(Long taskId, Priority priority) {
+        TaskManagement task = taskRepository.findById(taskId)
+            .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
+        task.setPriority(priority);
+        return taskMapper.modelToDto(taskRepository.save(task));
+    }
+
+    @Override
+    public List<TaskManagementDto> getTasksByPriority(Priority priority) {
+        List<TaskManagement> tasks = taskRepository.findAll();
+        return taskMapper.modelListToDtoList(
+            tasks.stream().filter(task -> priority.equals(task.getPriority())).collect(Collectors.toList())
+        );
     }
 }

@@ -16,6 +16,6 @@ public class TaskManagement {
     private TaskStatus status;
     private Long assigneeId; // Simplified from Entity for this assignment
     private Long taskDeadlineTime;
-    private Priority priority;
+    private Priority priority = Priority.MEDIUM;
     private Long startDate;
 }

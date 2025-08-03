@@ -2,6 +2,7 @@ package com.railse.hiring.workforcemgmt.mapper;
 
 import com.railse.hiring.workforcemgmt.dto.TaskManagementDto;
 import com.railse.hiring.workforcemgmt.model.TaskManagement;
+import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;

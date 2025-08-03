@@ -22,15 +22,20 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     public InMemoryTaskRepository() {
         // Seed data
-        createSeedTask(101L, ReferenceType.ORDER, Task.CREATE_INVOICE, 1L, TaskStatus.ASSIGNED, Priority.HIGH);
-        createSeedTask(101L, ReferenceType.ORDER, Task.ARRANGE_PICKUP, 1L, TaskStatus.COMPLETED, Priority.HIGH);
-        createSeedTask(102L, ReferenceType.ORDER, Task.CREATE_INVOICE, 2L, TaskStatus.ASSIGNED, Priority.MEDIUM);
-        createSeedTask(201L, ReferenceType.ENTITY, Task.ASSIGN_CUSTOMER_TO_SALES_PERSON, 2L, TaskStatus.ASSIGNED, Priority.LOW);
-        createSeedTask(201L, ReferenceType.ENTITY, Task.ASSIGN_CUSTOMER_TO_SALES_PERSON, 3L, TaskStatus.ASSIGNED, Priority.LOW); // duplicate for Bug #1
-        createSeedTask(103L, ReferenceType.ORDER, Task.COLLECT_PAYMENT, 1L, TaskStatus.CANCELLED, Priority.MEDIUM); // for Bug #2
+        createSeedTask(101L, ReferenceType.ORDER, Task.CREATE_INVOICE, 1L, Priority.HIGH);
+        createSeedTask(101L, ReferenceType.ORDER, Task.ARRANGE_PICKUP, 1L, Priority.HIGH);
+        createSeedTask(102L, ReferenceType.ORDER, Task.CREATE_INVOICE, 2L, Priority.MEDIUM);
+        createSeedTask(201L, ReferenceType.ENTITY, Task.ASSIGN_CUSTOMER_TO_SALES_PERSON, 2L, Priority.LOW);
+        createSeedTask(201L, ReferenceType.ENTITY, Task.ASSIGN_CUSTOMER_TO_SALES_PERSON, 3L, Priority.LOW); // duplicate for Bug #1
+        createSeedTask(103L, ReferenceType.ORDER, Task.COLLECT_PAYMENT, 1L, Priority.MEDIUM); // for Bug #2
+        // Set status to CANCELLED for this specific seed
+        TaskManagement cancelledTask = taskStore.get(idCounter.get());
+        if (cancelledTask != null && cancelledTask.getReferenceId() == 103L && cancelledTask.getTask() == Task.COLLECT_PAYMENT) {
+            cancelledTask.setStatus(TaskStatus.CANCELLED);
+        }
     }
 
-    private void createSeedTask(Long refId, ReferenceType refType, Task task, Long assigneeId, TaskStatus status, Priority priority) {
+    private void createSeedTask(Long refId, ReferenceType refType, Task task, Long assigneeId, Priority priority) {
         long newId = idCounter.incrementAndGet();
         TaskManagement newTask = new TaskManagement();
         newTask.setId(newId);
@@ -38,8 +43,8 @@ public class InMemoryTaskRepository implements TaskRepository {
         newTask.setReferenceType(refType);
         newTask.setTask(task);
         newTask.setAssigneeId(assigneeId);
-        newTask.setStatus(status);
-        newTask.setPriority(priority);
+        newTask.setStatus(TaskStatus.ASSIGNED);
+        newTask.setPriority(priority != null ? priority : Priority.MEDIUM);
         newTask.setDescription("This is a seed task.");
         newTask.setTaskDeadlineTime(System.currentTimeMillis() + 86400000); // 1 day from now
         newTask.setStartDate(System.currentTimeMillis());
