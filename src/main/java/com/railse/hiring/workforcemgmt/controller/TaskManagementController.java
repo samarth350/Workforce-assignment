@@ -4,6 +4,9 @@ import com.railse.hiring.workforcemgmt.common.model.response.Response;
 import com.railse.hiring.workforcemgmt.dto.*;
 import com.railse.hiring.workforcemgmt.service.TaskManagementService;
 import com.railse.hiring.workforcemgmt.model.enums.Priority;
+import com.railse.hiring.workforcemgmt.model.TaskComment;
+import com.railse.hiring.workforcemgmt.repository.TaskCommentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,8 +17,15 @@ public class TaskManagementController {
 
     private final TaskManagementService taskManagementService;
 
+    @Autowired
+    private TaskCommentRepository taskCommentRepository;
+
     public TaskManagementController(TaskManagementService taskManagementService) {
         this.taskManagementService = taskManagementService;
+    }
+
+    public static class CommentRequest {
+        public String comment;
     }
 
     @GetMapping("/{id}")
@@ -51,5 +61,15 @@ public class TaskManagementController {
     @GetMapping("/tasks/priority/{priority}")
     public Response<List<TaskManagementDto>> getTasksByPriority(@PathVariable Priority priority) {
         return new Response<>(taskManagementService.getTasksByPriority(priority));
+    }
+
+    @PostMapping("/tasks/{taskId}/comments")
+    public TaskComment addComment(@PathVariable Long taskId, @RequestBody CommentRequest request) {
+        return taskCommentRepository.addComment(taskId, request.comment);
+    }
+
+    @GetMapping("/tasks/{taskId}/comments")
+    public List<TaskComment> getComments(@PathVariable Long taskId) {
+        return taskCommentRepository.getCommentsByTaskId(taskId);
     }
 }
