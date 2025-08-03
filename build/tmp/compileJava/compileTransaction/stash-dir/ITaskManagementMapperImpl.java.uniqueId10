@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-03T12:58:23+0530",
+    date = "2025-08-02T23:30:16+0530",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.3.jar, environment: Java 17.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -32,7 +32,6 @@ public class ITaskManagementMapperImpl implements ITaskManagementMapper {
         taskManagementDto.setAssigneeId( model.getAssigneeId() );
         taskManagementDto.setTaskDeadlineTime( model.getTaskDeadlineTime() );
         taskManagementDto.setPriority( model.getPriority() );
-        taskManagementDto.setStartDate( model.getStartDate() );
 
         return taskManagementDto;
     }
@@ -54,7 +53,6 @@ public class ITaskManagementMapperImpl implements ITaskManagementMapper {
         taskManagement.setAssigneeId( dto.getAssigneeId() );
         taskManagement.setTaskDeadlineTime( dto.getTaskDeadlineTime() );
         taskManagement.setPriority( dto.getPriority() );
-        taskManagement.setStartDate( dto.getStartDate() );
 
         return taskManagement;
     }

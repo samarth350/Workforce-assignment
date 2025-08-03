@@ -45,6 +45,7 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             newTask.setTaskDeadlineTime(item.getTaskDeadlineTime());
             newTask.setStatus(TaskStatus.ASSIGNED);
             newTask.setDescription("New task created.");
+            newTask.setStartDate(System.currentTimeMillis());
             createdTasks.add(taskRepository.save(newTask));
         }
         return taskMapper.modelListToDtoList(createdTasks);
@@ -108,12 +109,16 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     @Override
     public List<TaskManagementDto> fetchTasksByDate(TaskFetchByDateRequest request) {
         List<TaskManagement> tasks = taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
-
-        // Exclude CANCELLED tasks
+        Long rangeStart = request.getStartDate();
+        Long rangeEnd = request.getEndDate();
         List<TaskManagement> filteredTasks = tasks.stream()
-                .filter(task -> task.getStatus() != TaskStatus.CANCELLED)
-                .collect(Collectors.toList());
-
+            .filter(task -> task.getStatus() == TaskStatus.ASSIGNED)
+            .filter(task ->
+                (task.getStartDate() != null &&
+                    ((task.getStartDate() >= rangeStart && task.getStartDate() <= rangeEnd) ||
+                    (task.getStartDate() < rangeStart)))
+            )
+            .collect(Collectors.toList());
         return taskMapper.modelListToDtoList(filteredTasks);
     }
 }

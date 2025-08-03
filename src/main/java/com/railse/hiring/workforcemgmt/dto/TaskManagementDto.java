@@ -20,4 +20,5 @@ public class TaskManagementDto {
     private Long assigneeId;
     private Long taskDeadlineTime;
     private Priority priority;
+    private Long startDate;
 }
